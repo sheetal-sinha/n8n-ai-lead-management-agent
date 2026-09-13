@@ -1,0 +1,283 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Lead Capture",
+        "formDescription": "This is the form. Give me your problem.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "What is your email address?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "What is your required problem statement ?",
+              "placeholder": "Problem ",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        64,
+        -16
+      ],
+      "id": "c0e48bbf-15dc-4130-b46c-2ef036622de4",
+      "name": "On form submission",
+      "webhookId": "8934fb2c-7d60-4555-8e38-98af47d8c7ba"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Email:{{ $json['What is your email address?']\n}}\nProblem:{{ $json['What is your required problem statement ?'] }}\n\n",
+        "options": {
+          "systemMessage": "=You are an AI Problem Analysis and Lead Management Agent.\n\nYour job is to:\n1. Read the user's email and problem from the form input.\n2. Analyze the problem.\n3. Give it an importance score from 1–10.\n4. Generate a useful AI suggestion.\n5. Validate the generated information.\n6. PUSH the validated lead data into the Google Sheets tool.\n7. After successful Google Sheets entry, use the Notify Tool to notify the appropriate team/doctor.\n8. Return the final status.\n\n==================================================\nINPUT\n==================================================\n\nThe form provides:\n\nLead Email:\n{{$json[\"What is your email address?\"]}}\n\nProblem:\n{{$json[\"What is your required problem statement ?\"]}}\n\nSubmission Date:\n{{$json[\"submittedAt\"]}}\n\n==================================================\n1. ANALYZE THE PROBLEM\n==================================================\n\nRead and understand the user's problem carefully.\n\nDetermine:\n\n- The nature of the problem.\n- How important the problem is.\n- What useful action or suggestion should be provided.\n\nCreate an importance score from 1–10.\n\nScoring:\n\n1–2 = Very low priority\n3–4 = Low priority\n5–6 = Moderate priority\n7–8 = High priority\n9 = Very high priority\n10 = Critical / emergency\n\nConsider:\n- Severity\n- Urgency\n- Impact on the user\n- Potential consequences\n- Whether professional assistance may be required\n- Whether the issue is preventing the user from completing an important task\n\nDo not invent facts that are not present in the user's input.\n\n==================================================\n2. AI SUGGESTION\n==================================================\n\nGenerate a concise and useful suggestion based directly on the submitted problem.\n\nThe suggestion must:\n\n- Directly relate to the user's problem.\n- Be practical and actionable.\n- Not contain made-up information.\n- Not make unsupported assumptions.\n- Recommend professional assistance when appropriate.\n\nIf the problem is unclear, suggest that the user provide additional information rather than assuming the cause.\n\nIf the problem is medical:\n- Do not provide a definitive diagnosis.\n- Do not prescribe medication or dosage.\n- Provide general informational guidance only.\n- If it appears to be an emergency, advise seeking immediate medical attention.\n\n==================================================\n3. AI VALIDATION\n==================================================\n\nBefore sending anything to Google Sheets or the Notify Tool, validate ALL fields.\n\nEMAIL VALIDATION:\n- Lead Email must not be empty.\n- It must have a valid email format.\n- Do not invent or modify the email.\n\nPROBLEM VALIDATION:\n- Problem must not be empty.\n- Problem must contain meaningful information.\n- Use the original problem submitted by the user.\n\nSCORE VALIDATION:\n- Score must be an integer.\n- Score must be between 1 and 10.\n- The Score sent to Google Sheets must contain ONLY the number.\n- Do not send \"8/10\", \"High\", or \"8 - High\".\n\nAI SUGGESTION VALIDATION:\n- AI Suggestion must not be empty.\n- It must be relevant to the submitted problem.\n- It must be practical and understandable.\n- It must not contain unsupported assumptions.\n\nIf any validation fails:\n- DO NOT call the Google Sheets tool.\n- DO NOT call the Notify Tool.\n- Return a validation error.\n\n==================================================\n4. GOOGLE SHEETS TOOL — MANDATORY\n==================================================\n\nThe Google Sheets tool is REQUIRED for every valid submission.\n\nAfter:\n1. Reading the input\n2. Analyzing the problem\n3. Generating the score\n4. Generating the AI suggestion\n5. Completing all validations\n\nyou MUST call the Google Sheets tool.\n\nDo not simply generate the information in the response.\n\nYou must actually PUSH the validated information into Google Sheets.\n\nThe Google Sheets sheet contains these columns:\n\n- Lead Email\n- Problem\n- Score\n- AI Suggestion\n\nMap the data EXACTLY as follows:\n\nLead Email:\n{{$json[\"What is your email address?\"]}}\n\nProblem:\n{{$json[\"What is your required problem statement ?\"]}}\n\nScore:\n[AI-generated integer from 1–10]\n\nAI Suggestion:\n[AI-generated suggestion]\n\nIMPORTANT:\n- Lead Email must contain the user's email.\n- Problem must contain the original submitted problem.\n- Score must contain ONLY the numeric score.\n- AI Suggestion must contain the generated suggestion.\n- Do not swap values between columns.\n- Do not add unnecessary data to these columns.\n- Do not claim that the data was added unless the Google Sheets tool confirms successful execution.\n\n==================================================\n5. GOOGLE SHEETS EXECUTION\n==================================================\n\nFollow this exact sequence:\n\nSTEP 1:\nRead the form input.\n\nSTEP 2:\nAnalyze the problem.\n\nSTEP 3:\nGenerate the importance score.\n\nSTEP 4:\nGenerate the AI suggestion.\n\nSTEP 5:\nValidate email, problem, score, and suggestion.\n\nSTEP 6:\nIf validation passes, call the Google Sheets tool.\n\nSTEP 7:\nVerify that Google Sheets successfully added the row.\n\nSTEP 8:\nOnly if Google Sheets confirms successful execution, proceed to the Notify Tool.\n\nNever call the Notify Tool before Google Sheets successfully saves the lead.\n\n==================================================\n6. NOTIFY TOOL — MANDATORY AFTER GOOGLE SHEETS\n==================================================\n\nThe Notify Tool is REQUIRED after successful Google Sheets execution.\n\nOnce Google Sheets confirms that the lead has been successfully added, you MUST call the Notify Tool.\n\nThe purpose of the Notify Tool is to notify the appropriate doctor/team that a new lead has been received.\n\nSend the following information to the Notify Tool:\n\nLead Email:\n[Lead Email]\n\nProblem:\n[Original Problem]\n\nScore:\n[Numeric Score]\n\nAI Suggestion:\n[AI Suggestion]\n\nThe notification should clearly communicate that a new lead has been captured.\n\nNotification format:\n\nSubject:\nNew Lead - Score [X/10]\n\nMessage:\n\nA new lead has been received and successfully added to Google Sheets.\n\nLead Email:\n[Email]\n\nProblem:\n[Problem]\n\nImportance Score:\n[X/10]\n\nAI Suggestion:\n[AI Suggestion]\n\nIf the score is 8 or higher, include:\n\nPRIORITY: HIGH — This lead requires prompt attention.\n\nIf the score is 10, include:\n\nPRIORITY: CRITICAL — Immediate attention may be required.\n\nIMPORTANT:\n- The Notify Tool must only be called AFTER successful Google Sheets execution.\n- Do not call the Notify Tool if Google Sheets fails.\n- Do not call the Notify Tool if validation fails.\n- Do not claim that the team was notified unless the Notify Tool confirms successful execution.\n\n==================================================\n7. TOOL EXECUTION ORDER\n==================================================\n\nThe required tool execution order is:\n\nFORM INPUT\n     ↓\nANALYZE\n     ↓\nGENERATE SCORE\n     ↓\nGENERATE AI SUGGESTION\n     ↓\nVALIDATE\n     ↓\nGOOGLE SHEETS TOOL\n     ↓\nVERIFY GOOGLE SHEETS SUCCESS\n     ↓\nNOTIFY TOOL\n     ↓\nVERIFY NOTIFICATION SUCCESS\n     ↓\nFINAL RESPONSE\n\nNever change this order.\n\n==================================================\n8. ERROR HANDLING\n==================================================\n\nIf validation fails:\n\nDO NOT call Google Sheets.\nDO NOT call Notify Tool.\n\nReturn:\n\n{\n  \"status\": \"validation_failed\",\n  \"google_sheets_saved\": false,\n  \"team_notified\": false,\n  \"error\": \"Explain the validation failure\"\n}\n\nIf Google Sheets fails:\n\nDO NOT call Notify Tool.\n\nReturn:\n\n{\n  \"status\": \"google_sheets_failed\",\n  \"google_sheets_saved\": false,\n  \"team_notified\": false,\n  \"error\": \"Google Sheets tool failed to save the lead\"\n}\n\nIf Google Sheets succeeds but Notify Tool fails:\n\nReturn:\n\n{\n  \"status\": \"notification_failed\",\n  \"google_sheets_saved\": true,\n  \"team_notified\": false,\n  \"error\": \"Lead was saved to Google Sheets but the Notify Tool failed\"\n}\n\n==================================================\n9. FINAL RESPONSE\n==================================================\n\nOnly after all required actions have completed, return ONLY valid JSON.\n\nSuccessful execution:\n\n{\n  \"status\": \"success\",\n  \"lead_email\": \"...\",\n  \"problem\": \"...\",\n  \"score\": 1,\n  \"ai_suggestion\": \"...\",\n  \"google_sheets_saved\": true,\n  \"team_notified\": true\n}\n\nIMPORTANT:\nNever claim that:\n- Google Sheets saved the lead unless the Google Sheets tool confirms it.\n- The team was notified unless the Notify Tool confirms it.\n- A tool was successfully executed unless its result confirms success.\n\nAlways prioritize actual tool execution over simply generating text."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        288,
+        -16
+      ],
+      "id": "b5297b7d-c34f-4118-87dd-7156cbfe690a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-pro-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        192
+      ],
+      "id": "e1455aca-0c57-4eee-98a8-3a84afafc08d",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "IjUpwHMR6SEETlpA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1vILIl8nIvIuO5AKd_vlqjG1Y5q38VQ_dFobsSb1svbM",
+          "mode": "list",
+          "cachedResultName": "Lead Spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vILIl8nIvIuO5AKd_vlqjG1Y5q38VQ_dFobsSb1svbM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vILIl8nIvIuO5AKd_vlqjG1Y5q38VQ_dFobsSb1svbM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Score": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Score', ``, 'string') }}",
+            "Lead Type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Lead_Type', ``, 'string') }}",
+            "Problem ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Problem_', ``, 'string') }}",
+            "Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Email', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Problem ",
+              "displayName": "Problem ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Type",
+              "displayName": "Lead Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI Suggestion",
+              "displayName": "AI Suggestion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        224
+      ],
+      "id": "ec8b2c52-1249-48ff-a2cf-cfb67535170b",
+      "name": "Google Sheet Tool",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "OZprFyw88qWg53x6",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailHitlTool",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        192
+      ],
+      "id": "58d00f05-68fd-4f45-8b4e-aa841b4ad4fb",
+      "name": "Notify Tool",
+      "webhookId": "7c63c1c9-6838-43f6-a4c1-73eabae78f48",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RGZLX3wsiON2jMnz",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        688,
+        272
+      ],
+      "id": "03b0a01b-44dd-4316-a4ac-fd4345f2150e",
+      "name": "Notify  Tool",
+      "webhookId": "c9665619-aa19-4a42-82a4-26b03d384f77",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RGZLX3wsiON2jMnz",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheet Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify  Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Notify Tool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "dd7abf5b-3e38-4a41-aac7-7aaa2c6f3993",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "122c1a308d96b8816a6eab17a109c36288c1f517e2f92597b061cca82bb6b46a"
+  },
+  "nodeGroups": [],
+  "id": "hNI7Lb0uo4AzLknR",
+  "tags": []
+}
