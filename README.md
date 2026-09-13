@@ -119,3 +119,7 @@ Google Sheets
 Notification
        ↓
 Team / Doctor
+
+
+<img width="1102" height="525" alt="image" src="https://github.com/user-attachments/assets/bff80e49-4da7-4a99-aeeb-339a7f479fa0" />
+
