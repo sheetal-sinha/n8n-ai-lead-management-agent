@@ -35,7 +35,7 @@ When a user submits a problem statement through an n8n form, the system automati
 4. **Generates Practical AI Suggestions** tailored specifically to the problem.
 5. **Appends Validated Lead Data** directly into a master **Google Sheets** database.
 6. **Triggers Email Alerts** via **Gmail** to notify responding teams/doctors for high-priority items.
-7. 
+7. Implements Error Handling & Validation Controls to prevent invalid data entry and ensure reliable execution across the workflow.
 
 ---
 
