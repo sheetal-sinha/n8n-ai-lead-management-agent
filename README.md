@@ -1,6 +1,6 @@
 # 🤖 AI Lead Management & Problem Analysis Agent
 
-An intelligent end-to-end lead ingestion, issue analysis, priority scoring, Google Sheets logging, and automated notification workflow built with **n8n**, **Google Gemini AI**, and **Gmail**.
+An intelligent and  end-to-end lead ingestion, issue analysis, priority scoring, Google Sheets logging, and automated notification workflow built with **n8n**, **Google Gemini AI**, and **Gmail**.
 
 [![n8n](https://img.shields.io/badge/Automation-n8n-FF6D5A?style=for-the-badge&logo=n8n)](https://n8n.io)
 [![Google Gemini](https://img.shields.io/badge/AI%20Engine-Google%20Gemini-4285F4?style=for-the-badge&logo=googlegemini)](https://ai.google.dev/)
@@ -30,11 +30,12 @@ The **AI Lead Management & Problem Analysis Agent** eliminates manual review ove
 
 When a user submits a problem statement through an n8n form, the system automatically:
 1. **Parses & Validates** user input payload (Email & Problem Statement).
-2. **Analyzes Issue Complexity** using a LangChain-powered AI Agent with Google Gemini LLM.
+2. **Analyzes Issue Complexity** using a LangChain-powered AI Agent with Google Gemini LLM..
 3. **Assigns a Priority Score (1–10)** based on urgency, impact, and risk.
 4. **Generates Practical AI Suggestions** tailored specifically to the problem.
 5. **Appends Validated Lead Data** directly into a master **Google Sheets** database.
 6. **Triggers Email Alerts** via **Gmail** to notify responding teams/doctors for high-priority items.
+7. 
 
 ---
 
