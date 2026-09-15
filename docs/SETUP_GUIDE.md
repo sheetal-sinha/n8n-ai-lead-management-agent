@@ -1,4 +1,4 @@
-# 🛠️ Setup & Installation Guide
+# 🛠️ Setup & Installation Guideline
 
 This guide will help you set up and deploy the **AI Lead Management & Problem Analysis Agent** in your own n8n instance.
 
@@ -52,3 +52,7 @@ Before starting, ensure you have:
    - The lead appears in your Google Sheet.
    - An email notification is sent via Gmail.
 5. Switch the workflow toggle to **Active** for live production use.
+6. ### 🔧 Enhancement
+
+* **Add AI-Powered Lead Routing:** Automatically route leads to the appropriate team or department based on the AI-generated priority score, issue complexity, and problem category.
+
