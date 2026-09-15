@@ -84,7 +84,8 @@ n8n-ai-lead-management-agent/
 │   ├── 01_n8n_workflow_canvas.png        # Active n8n workflow canvas screenshot
 │   ├── 02_lead_capture_form.png          # Customer-facing lead intake form UI
 │   ├── 03_google_sheets_output.png       # Master Google Sheets database output preview
-│   └── 04_email_notification.png        # Automated Gmail notification email preview
+│   ├── 04_email_notification.png        # Automated Gmail notification email preview
+│   └── 05_customer_solution_email.png   # AI Problem Analysis & Solution email sent to user
 │
 ├── 📂 docs/
 │   ├── WORKFLOW.md                       # Complete node specifications & prompt engineering logic
@@ -124,6 +125,13 @@ n8n-ai-lead-management-agent/
 *Automated email notification sent via Gmail with lead details, priority score (7/10), AI suggestion, and approval trigger.*
 
 ![Gmail Notification Alert](./screenshots/04_email_notification.png)
+
+---
+
+### 5. AI Problem Analysis & Solution Email
+*Detailed AI-generated response email delivered to the user containing Problem Analysis, Importance Score (7/10), Recommended Solution steps, and Next Steps guidance.*
+
+![AI Customer Solution Email](./screenshots/05_customer_solution_email.png)
 
 ---
 
