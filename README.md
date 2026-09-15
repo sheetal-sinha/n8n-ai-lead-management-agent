@@ -65,10 +65,14 @@ An intelligent automated pipeline that acts as a **24/7 First Responder**:
 
 - 🤖 **LangChain AI Agent Integration**: Combines natural language processing with tool execution capabilities.
 - ⚡ **Google Gemini 3.6 Flash Powered**: High-speed reasoning with low latency and precise instruction following.
+- 🔄 **Automatic Fault Tolerance & Retries**: Gemini LLM node configured with `retryOnFail: true`, 3 max retries, and 3000ms exponential backoff strategy for high API resilience.
 - 🛡️ **Built-in Strict Data Validation**: Validates email format, non-empty fields, and strict integer scores (1–10) before tool execution.
 - 📊 **Automated Google Sheets Logging**: Directly appends validated lead records without manual data entry.
+- 📩 **Dual-Channel Gmail Automation**:
+  - **Send Email To User Tool**: Automatically generates and sends a structured email to the user with Problem Analysis, Importance Score, Recommended Solution, and Next Steps.
+  - **Notify Tool**: Sends priority escalation/approval notifications to internal team/doctors.
 - 🚨 **Conditional Priority Escalation**: Sends targeted email notifications for high-severity (Score 8+) and emergency (Score 10) issues.
-- 🔒 **Resilient Tool Execution Flow**: Enforces strict operational sequencing (`Form Input` ➔ `Validation` ➔ `Google Sheets` ➔ `Gmail Notification`).
+- 🔒 **Resilient Tool Execution Flow**: Enforces strict operational sequencing (`Form Input` ➔ `Validation` ➔ `Google Sheets` ➔ `Customer Solution Email` ➔ `Team Notification`).
 
 ---
 
@@ -101,7 +105,7 @@ n8n-ai-lead-management-agent/
 ## 📸 Screenshots & Visual Demos
 
 ### 1. n8n Workflow Canvas
-*Full view of the node graph featuring Form Trigger, LangChain AI Agent, Google Gemini Chat Model, Google Sheets Tool, and Gmail Notify Tool.*
+*Full view of the node graph featuring Form Trigger, LangChain AI Agent, Google Gemini Chat Model (with 3x Auto Retry), Google Sheets Tool, User Solution Email Tool, and Gmail Notify Tool.*
 
 ![n8n Workflow Canvas](./screenshots/01_n8n_workflow_canvas.png)
 
@@ -146,23 +150,24 @@ n8n-ai-lead-management-agent/
 └─────────────┬─────────────┘
               │
               ▼
-┌───────────────────────────┐
-│        AI Agent           │  <-- (LangChain Core Engine)
-└─────────┬───┬───┬─────────┘
-          │   │   │
-          │   │   └────────────────────────────────────┐
-          │   └───────────────────────┐                │
-          ▼                           ▼                ▼
-┌───────────────────┐    ┌───────────────────┐  ┌───────────────┐
-│ Gemini LLM Model  │    │ Google Sheets     │  │ Notify Tool   │
-│ (gemini-3.6-flash)│    │ (Data Persistence)│  │ (Gmail Alert) │
-└───────────────────┘    └───────────────────┘  └───────────────┘
+┌───────────────────────────┐      ┌───────────────────────────┐
+│        AI Agent           │ ◄──► │ Google Gemini LLM         │
+│   (LangChain Engine)      │      │ (gemini-3.6-flash, 3x Retry)
+└─┬─────────┬─────────┬─────┘      └───────────────────────────┘
+  │         │         │
+  │         │         └────────────────────────────────────────┐
+  │         └───────────────────────────────┐                  │
+  ▼                                         ▼                  ▼
+┌───────────────────────┐       ┌──────────────────────┐   ┌───────────────────────┐
+│ Google Sheets Tool    │       │ Send Email To User   │   │ Notify Tool           │
+│ (Data Persistence)    │ ───►  │ (Customer Diagnosis) │   │ (Team Escalation Alert)│
+└───────────────────────┘       └──────────────────────┘   └───────────────────────┘
 ```
 
 ### Execution Sequence Matrix
 
 ```text
-Form Trigger ➔ Validation Check ➔ AI Reasoning ➔ Google Sheets Log ➔ Gmail Alert ➔ Response Payload
+Form Trigger ➔ Validation ➔ AI Reasoning (Gemini) ➔ Google Sheets Log ➔ Send Email To User ➔ Team Notify Tool Alert
 ```
 
 ---
@@ -171,11 +176,11 @@ Form Trigger ➔ Validation Check ➔ AI Reasoning ➔ Google Sheets Log ➔ Gma
 
 | Priority Score | Severity Level | System Action & Escalation Strategy |
 |:---:|:---|:---|
-| **1 – 2** | Low | Standard inquiry. Logged to Google Sheets; standard queue. |
-| **3 – 4** | Moderate-Low | Minor issue or feedback. Logged to Google Sheets; routine review. |
-| **5 – 6** | Moderate | Operational inconvenience. Logged to Google Sheets; standard guidance generated. |
-| **7 – 8** | High | Severe distress / blocking issue. Logged to Google Sheets; **HIGH PRIORITY** email alert. |
-| **9 – 10** | Critical / Emergency | Outage or urgent threat. Logged to Google Sheets; **CRITICAL ALERT** immediate notification. |
+| **1 – 2** | Low | Standard inquiry. Logged to Google Sheets; solution emailed to user. |
+| **3 – 4** | Moderate-Low | Minor issue or feedback. Logged to Google Sheets; solution emailed to user. |
+| **5 – 6** | Moderate | Operational inconvenience. Logged to Google Sheets; solution emailed to user. |
+| **7 – 8** | High | Severe distress / blocking issue. Logged to Google Sheets; solution emailed to user + **HIGH PRIORITY** team alert. |
+| **9 – 10** | Critical / Emergency | Outage or urgent threat. Logged to Google Sheets; solution emailed to user + **CRITICAL ALERT** instant notification. |
 
 ---
 
@@ -195,6 +200,7 @@ Form Trigger ➔ Validation Check ➔ AI Reasoning ➔ Google Sheets Log ➔ Gma
 | `Lead Email` | String | Validated email address submitted by user |
 | `Problem` | String | Original submitted problem statement |
 | `Score` | Integer (1–10) | AI-generated priority score |
+| `Lead Type` | String | Automated categorization of inquiry |
 | `AI Suggestion` | String | Practical, actionable recommendation generated by Gemini |
 
 ---
@@ -205,9 +211,10 @@ Form Trigger ➔ Validation Check ➔ AI Reasoning ➔ Google Sheets Log ➔ Gma
 |:---|:---|:---|
 | **Workflow Engine** | [n8n](https://n8n.io) | v1.0+ |
 | **AI Agent Framework** | `@n8n/n8n-nodes-langchain.agent` | LangChain Agent v3.1 |
-| **LLM Model** | `@n8n/n8n-nodes-langchain.lmChatGoogleGemini` | Google Gemini 3.6 Flash |
+| **LLM Model** | `@n8n/n8n-nodes-langchain.lmChatGoogleGemini` | Google Gemini 3.6 Flash (3x Auto-Retry) |
 | **Database** | `n8n-nodes-base.googleSheetsTool` | Google Sheets API v4 |
-| **Notification Engine** | `n8n-nodes-base.gmailTool` | Gmail OAuth2 API |
+| **User Email Engine** | `n8n-nodes-base.gmailTool` | Gmail OAuth2 API (Send Email To User) |
+| **Notification Engine** | `n8n-nodes-base.gmailHitlTool` / `gmailTool` | Gmail OAuth2 API (Notify Tool Team Alert) |
 
 ---
 
