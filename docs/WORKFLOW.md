@@ -6,12 +6,12 @@ This document provides a technical deep-dive into the **AI Lead Management & Pro
 
 ## 📐 System Flow Diagram
 
-```text
+```text in this
 [ User Form Submission ]
            │
            ▼
 ┌──────────────────────┐
-│  On Form Submission  │  <-- (Form Trigger Node)
+│  On Form Submission  │  <-- (Form Trigger Node) given flow diagram
 └──────────┬───────────┘
            │
            ▼
