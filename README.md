@@ -218,6 +218,16 @@ Form Trigger ➔ Validation ➔ AI Reasoning (Gemini) ➔ Google Sheets Log ➔ 
 
 ---
 
+## 🔐 Required Credentials & Environment Matrix
+
+| Credential Name | Provider | Node Target | Required Scopes / Permissions |
+|:---|:---|:---|:---|
+| `googlePalmApi` | Google AI Studio | Google Gemini Chat Model | Gemini API Access (`models/gemini-3.6-flash`) |
+| `googleSheetsOAuth2Api` | Google Cloud Console | Google Sheet Tool | `https://www.googleapis.com/auth/spreadsheets` |
+| `gmailOAuth2` | Google Cloud Console | Send Email To User & Notify Tool | `https://www.googleapis.com/auth/gmail.send` |
+
+---
+
 ## 🚀 Quick Start & Installation
 
 ### Step 1: Clone Repository
