@@ -271,6 +271,15 @@ The workflow incorporates strict error recovery rules:
 
 ---
 
+## 🧪 Verification & Testing Strategy
+
+To verify your workflow before deploying to production:
+1. **Low-Priority Test**: Submit an email with a mild query (e.g., *"How do I change my password?"*). Verify score `1–3`, sheet entry, and user solution email delivery.
+2. **High-Priority Test**: Submit an email with an urgent issue (e.g., *"Database connection timing out under surge load"*). Verify score `7–9`, sheet entry, user email, and **Notify Tool** team alert trigger.
+3. **Invalid Email Test**: Submit an empty email field or invalid string. Verify that Google Sheets and Gmail tools are safely skipped.
+
+---
+
 ## 📚 Documentation
 
 - ⚙️ **[Workflow & Architecture Specifications](./docs/WORKFLOW.md)**: Comprehensive breakdown of nodes, prompts, and score rubrics.
