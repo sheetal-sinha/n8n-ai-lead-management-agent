@@ -261,6 +261,16 @@ The workflow incorporates strict error recovery rules:
 
 ---
 
+## 🔧 Troubleshooting & Common Resolutions
+
+| Common Issue | Cause | Resolution |
+|:---|:---|:---|
+| `RESOURCE_EXHAUSTED` (429) | Gemini API Rate Limit Exceeded | Retries are handled automatically by the configured 3x backoff; check API quota limits in Google AI Studio. |
+| `Spreadsheet ID Not Found` | Invalid Document ID in Google Sheet Tool | Copy the exact Spreadsheet ID from `https://docs.google.com/spreadsheets/d/<SPREADSHEET_ID>/edit`. |
+| `403 Access Token Expired` | Expired Gmail / Google Sheets OAuth Credentials | Re-authenticate OAuth2 connection in the n8n Credential Manager. |
+
+---
+
 ## 📚 Documentation
 
 - ⚙️ **[Workflow & Architecture Specifications](./docs/WORKFLOW.md)**: Comprehensive breakdown of nodes, prompts, and score rubrics.
