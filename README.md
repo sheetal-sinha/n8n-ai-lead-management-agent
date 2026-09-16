@@ -1,4 +1,4 @@
-# 🤖 AI Lead Management & Problem Analysis Agent
+# 🤖 AI Lead Management & Problem Analysis Agent IN
 
 An intelligent, autonomous end-to-end lead ingestion, issue analysis, priority scoring, Google Sheets database logging, and automated team notification workflow built with **n8n**, **LangChain Agent**, **Google Gemini AI**, and **Gmail**.
 
