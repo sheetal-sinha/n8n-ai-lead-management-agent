@@ -20,6 +20,7 @@ An intelligent, autonomous end-to-end lead ingestion, issue analysis, priority s
 - [Screenshots & Visual Demos](#-screenshots--visual-demos)
 - [System Architecture & Sequence Flow](#-system-architecture--sequence-flow)
 - [AI Priority Scoring Matrix](#-ai-priority-scoring-matrix)
+- [Prompt Engineering & Data Guardrails](#-prompt-engineering--data-guardrails)
 - [Data Schemas (Input & Output)](#-data-schemas-input--output)
 - [Technology Stack](#-technology-stack)
 - [Required Credentials & Environment Matrix](#-required-credentials--environment-matrix)
@@ -184,6 +185,17 @@ Form Trigger ➔ Validation ➔ AI Reasoning (Gemini) ➔ Google Sheets Log ➔ 
 | **5 – 6** | Moderate | Operational inconvenience. Logged to Google Sheets; solution emailed to user. |
 | **7 – 8** | High | Severe distress / blocking issue. Logged to Google Sheets; solution emailed to user + **HIGH PRIORITY** team alert. |
 | **9 – 10** | Critical / Emergency | Outage or urgent threat. Logged to Google Sheets; solution emailed to user + **CRITICAL ALERT** instant notification. |
+
+---
+
+## 💡 Prompt Engineering & Data Guardrails
+
+The system prompt governing the LangChain AI Agent enforces five core execution guardrails:
+1. **Zero Hallucination Constraint**: The AI is instructed strictly never to invent details outside the user's explicit problem statement.
+2. **Strict Score Type Enforcement**: Scores passed to tools must be pure integers (`1` to `10`) without text formatting (e.g. `7`, not `"7/10"` or `"High"`).
+3. **Medical Safety Disclaimer**: For medical or health-related submissions, the AI provides informational guidance only, advising professional consultation without issuing diagnoses or prescribing medication.
+4. **Mandatory Execution Order**: Tool calls follow a locked sequence (`Google Sheets Persistence` ➔ `Send Email To User` ➔ `Team Notify Tool`).
+5. **Validation Error Abort**: If email validation fails, tool execution halts immediately to prevent corrupt database entries.
 
 ---
 
